@@ -7,7 +7,7 @@ const Home = () => {
 
   const navigate = useNavigate()
   const fun=async()=>{
-    const {data} = await axios.get("http://localhost:8080/api/")
+    const {data} = await axios.get("https://taskmanagerb-k9mv.onrender.com/api/")
     console.log(data);
   }
 

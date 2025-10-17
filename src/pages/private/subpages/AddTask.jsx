@@ -33,7 +33,7 @@ const AddTask = () => {
 
     try {
       const result = await axios.post(
-        "http://localhost:8080/api/addtasks",
+        "https://taskmanagerb-k9mv.onrender.com/api/addtasks",
         task
       );
       // console.log(result);

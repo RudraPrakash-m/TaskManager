@@ -25,7 +25,7 @@ const Otp = () => {
     try {
       if(otp==state[1].otp){
 
-        const result = await axios.post("http://localhost:8080/api/otp",state[0])
+        const result = await axios.post("https://taskmanagerb-k9mv.onrender.com/api/otp",state[0])
         // console.log(result);
         alert("Registered Successfully")
         navigate("/login", {state:location.pathname})

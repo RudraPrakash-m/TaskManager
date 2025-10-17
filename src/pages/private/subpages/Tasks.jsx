@@ -33,7 +33,7 @@ const Tasks = ({ reloadTrigger }) => {
       try {
         setLoading(true);
         const { data } = await axios.post(
-          "http://localhost:8080/api/alltasks",
+          "https://taskmanagerb-k9mv.onrender.com/api/alltasks",
           { userId }
         );
         setTasks(data);
