@@ -13,13 +13,13 @@ const Dashboard = () => {
   if (token) {
     try {
       decoded = jwtDecode(token);
-      console.log(decoded.user);
+      // console.log(decoded.user);
     } catch (error) {
       console.error("Invalid token", error);
     }
   }
 
-  console.log(decoded.user.userId);
+  // console.log(decoded.user.userId);
 
   const handleAddTask = () => {
     navigate("/dashboard/addtask", { state: decoded.user.userId });

@@ -31,13 +31,13 @@ const Login = () => {
     e.preventDefault(); 
     try {
       const {data} = await axios.post("https://taskmanagerb-k9mv.onrender.com/api/login",formData)
-      console.log(data.token);
+      // console.log(data.token);
 
         localStorage.setItem("token", data.token)
         if (data.token) navigate("/dashboard");
       
     } catch (error) {
-      console.log(error.response);
+      // console.log(error.response);
       
       if(error.response?.status==404) alert("User Doesn't exists")
 
