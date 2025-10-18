@@ -8,14 +8,14 @@ const Home = () => {
   const navigate = useNavigate()
   const fun=async()=>{
     const {data} = await axios.get("https://taskmanagerb-k9mv.onrender.com/api/")
-    console.log(data);
+    // console.log(data);
   }
 
   const handleGetStarted=()=>{
     try {
       
       const token = localStorage.getItem("token")
-      console.log(token);
+      // console.log(token);
       
       if(token){
         navigate("/dashboard")
