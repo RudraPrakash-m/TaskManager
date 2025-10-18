@@ -9,6 +9,7 @@ const Otp = () => {
   
   const navigate = useNavigate();
   const [otp, setOtp] = useState("");
+  const [loading, setLoading] = useState(false)
 
   // console.log(state);
 
@@ -30,6 +31,7 @@ const Otp = () => {
 
   const handleSubmit = async(e) => {
     e.preventDefault();
+    setLoading(true)
     try {
       if(otp==state[1].otp){
 
@@ -89,6 +91,7 @@ const Otp = () => {
           Didn't receive OTP?{" "}
           <button
             className="text-blue-600 hover:underline"
+            disabled={loading}
             onClick={() => alert("Resend OTP logic here")}
           >
             Resend
