@@ -39,8 +39,8 @@ const Register = () => {
 
       setLoading(true)
       
-      const {data} = await axios.post("https://taskmanagerb-k9mv.onrender.com/api/register",formData)
-      console.log(data);
+      const {data} = await axios.post("http://localhost:8080/api/register",formData)
+      // console.log(data);
       
       navigate("/otp",{state:[formData,data]})
     } catch (error) {

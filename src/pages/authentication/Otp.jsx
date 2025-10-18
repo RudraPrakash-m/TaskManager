@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const Otp = () => {
@@ -11,6 +11,14 @@ const Otp = () => {
   const [otp, setOtp] = useState("");
 
   // console.log(state);
+
+  useEffect(() => {
+    if (!state) {
+      navigate("/", { replace: true });
+    }
+  }, [state, navigate]);
+
+  if (!state) return null;
   
 
   const hideEmail = (email) => {
