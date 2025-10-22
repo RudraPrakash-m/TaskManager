@@ -29,8 +29,10 @@ const Login = () => {
 
   const handleSubmit = async(e) => {
     e.preventDefault(); 
+    console.log(import.meta.env.VITE_URL);
+    
     try {
-      const {data} = await axios.post("https://taskmanagerb-k9mv.onrender.com/api/login",formData)
+      const {data} = await axios.post(`${import.meta.env.VITE_URL}/login`,formData)
       // console.log(data.token);
 
         localStorage.setItem("token", data.token)

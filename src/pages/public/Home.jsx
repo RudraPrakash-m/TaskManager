@@ -5,9 +5,12 @@ import axios from "axios";
 
 const Home = () => {
 
+  console.log(import.meta.env.VITE_URL);
+  
+
   const navigate = useNavigate()
   const fun=async()=>{
-    const {data} = await axios.get("https://taskmanagerb-k9mv.onrender.com/api/")
+    const {data} = await axios.get(`${import.meta.env.VITE_URL}/`)
     // console.log(data);
   }
 

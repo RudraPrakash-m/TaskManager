@@ -13,6 +13,7 @@ import ProtectedRoute from "./privateRouting/ProtectedRoute";
 import AboutPrivate from "./pages/private/AboutPrivate";
 import AddTask from "./pages/private/subpages/AddTask";
 import Tasks from "./pages/private/subpages/Tasks";
+import CompletedTasks from "./pages/private/subpages/CompletedTasks";
 
 const App = () => {
   const routes = createBrowserRouter([
@@ -66,6 +67,10 @@ const App = () => {
           path: "/dashboard/tasks",
           element: <Tasks />,
         },
+        {
+          path:"/dashboard/completed",
+          element: <CompletedTasks/>
+        }
       ],
     },
   ]);

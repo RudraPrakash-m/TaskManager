@@ -39,7 +39,7 @@ const Register = () => {
 
       setLoading(true)
       
-      const {data} = await axios.post("https://taskmanagerb-k9mv.onrender.com/api/register",formData)
+      const {data} = await axios.post(`${import.meta.env.VITE_URL}/register`,formData)
       // console.log(data);
       
       navigate("/otp",{state:[formData,data]})

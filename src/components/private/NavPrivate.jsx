@@ -137,17 +137,6 @@ const NavPrivate = () => {
             >
               Completed Tasks
             </NavLink>
-            <NavLink
-              to="/dashboard/deleted"
-              className={({ isActive }) =>
-                `text-gray-700 hover:text-blue-600 transition ${
-                  isActive ? "font-semibold text-blue-600" : ""
-                }`
-              }
-              onClick={() => setIsOpen(false)}
-            >
-              Deleted Tasks
-            </NavLink>
             <button
               onClick={handleLogout}
               className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"

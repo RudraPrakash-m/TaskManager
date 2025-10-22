@@ -13,6 +13,7 @@ const AddTask = () => {
     dueDate: "",
     priority: "Medium",
     userId: state,
+    completed:false
   });
 
   const handleAddTask = () => {
@@ -33,7 +34,7 @@ const AddTask = () => {
 
     try {
       const result = await axios.post(
-        "https://taskmanagerb-k9mv.onrender.com/api/addtasks",
+        `${import.meta.env.VITE_URL}/addtasks`,
         task
       );
       // console.log(result);

@@ -1,55 +1,63 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const Otp = () => {
   const { state } = useLocation();
-  const location = useLocation();
-  // console.log(location);
-  
   const navigate = useNavigate();
-  const [otp, setOtp] = useState("");
-  const [loading, setLoading] = useState(false)
+  const otpRef = useRef();
 
-  // console.log(state);
+  const [otp, setOtp] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [disableButton, setDisableButton] = useState(false);
 
   useEffect(() => {
     if (!state) {
       navigate("/", { replace: true });
+      return;
     }
+    otpRef.current?.focus();
   }, [state, navigate]);
 
   if (!state) return null;
-  
 
   const hideEmail = (email) => {
     const [user, domain] = email.split("@");
     if (!user || !domain) return email;
-    const firstChar = user.slice(0,3);
-    return `${firstChar}${"*".repeat(user.length - 2)}@${domain}`;
+    if (user.length <= 3) return `${user[0]}*@${domain}`;
+    const firstChars = user.slice(0, 3);
+    return `${firstChars}${"*".repeat(user.length - 3)}@${domain}`;
   };
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true)
-    try {
-      if(otp==state[1].otp){
+    setDisableButton(true);
+    setLoading(true);
 
-        const result = await axios.post("https://taskmanagerb-k9mv.onrender.com/api/otp",state[0])
-        // console.log(result);
-        alert("Registered Successfully")
-        navigate("/login", {state:location.pathname})
-      }else{
-        alert("enter valid otp")
+    try {
+      // Compare OTP safely on frontend
+      if (otp.trim() == state[1].otp) {
+        await axios.post(
+          "https://taskmanagerb-k9mv.onrender.com/api/otp",
+          state[0]
+        );
+        alert("Registered Successfully");
+        navigate("/login", { state: location.pathname });
+      } else {
+        alert("Enter valid OTP");
+        setDisableButton(false); // Re-enable button if wrong OTP
       }
-      
-      
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong. Try again.");
+      setDisableButton(false);
+    } finally {
+      setLoading(false);
     }
-    // console.log("OTP entered:", otp);
-    // console.log(result);
-    
+  };
+
+  const handleResend = () => {
+    alert("Resend OTP logic here"); // Keep as placeholder
   };
 
   return (
@@ -59,17 +67,17 @@ const Otp = () => {
           Enter OTP
         </h2>
 
-        {state && (
-          <p className="text-center text-gray-600 mb-6">
-            An OTP has been sent to <span className="font-medium">{hideEmail(state[0].email)}</span>
-          </p>
-        )}
+        <p className="text-center text-gray-600 mb-6">
+          An OTP has been sent to{" "}
+          <span className="font-medium">{hideEmail(state[0].email)}</span>
+        </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-gray-700 mb-1 font-medium">OTP</label>
             <input
               type="text"
+              ref={otpRef}
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
               required
@@ -81,9 +89,10 @@ const Otp = () => {
 
           <button
             type="submit"
-            className="w-full py-2.5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+            disabled={disableButton || loading}
+            className="w-full py-2.5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition"
           >
-            Verify OTP
+            {loading ? "Verifying..." : "Verify OTP"}
           </button>
         </form>
 
@@ -91,8 +100,8 @@ const Otp = () => {
           Didn't receive OTP?{" "}
           <button
             className="text-blue-600 hover:underline"
-            disabled={loading}
-            onClick={() => alert("Resend OTP logic here")}
+            onClick={handleResend}
+            disabled={disableButton}
           >
             Resend
           </button>
