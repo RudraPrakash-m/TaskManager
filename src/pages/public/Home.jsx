@@ -5,7 +5,7 @@ import axios from "axios";
 
 const Home = () => {
 
-  console.log(import.meta.env.VITE_URL);
+  // console.log(import.meta.env.VITE_URL);
   
 
   const navigate = useNavigate()
