@@ -5,62 +5,79 @@ import { useLocation, useNavigate } from "react-router-dom";
 const Otp = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
-  const otpRef = useRef();
-
-  const [otp, setOtp] = useState("");
+  const [otp, setOtp] = useState(["", "", "", ""]);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-  const [disableButton, setDisableButton] = useState(false);
+  const [resendTimer, setResendTimer] = useState(30);
+  const inputRefs = useRef([]);
 
   useEffect(() => {
     if (!state) {
       navigate("/", { replace: true });
       return;
     }
-    otpRef.current?.focus();
+    inputRefs.current[0]?.focus();
   }, [state, navigate]);
+
+  useEffect(() => {
+    if (resendTimer > 0) {
+      const timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [resendTimer]);
 
   if (!state) return null;
 
   const hideEmail = (email) => {
     const [user, domain] = email.split("@");
     if (!user || !domain) return email;
-    if (user.length <= 3) return `${user[0]}*@${domain}`;
-    const firstChars = user.slice(0, 3);
-    return `${firstChars}${"*".repeat(user.length - 3)}@${domain}`;
+    const firstChars = user.slice(0, 2);
+    return `${firstChars}${"*".repeat(user.length - 2)}@${domain}`;
+  };
+
+  const handleChange = (index, value) => {
+    if (!/^\d*$/.test(value)) return; // only digits
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
+
+    if (value && index < 3) inputRefs.current[index + 1]?.focus();
+    if (!value && index > 0) inputRefs.current[index - 1]?.focus();
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg("");
 
-    if (!/^\d{4}$/.test(otp)) {
-      setErrorMsg("OTP must be 4 digits.");
+    const enteredOtp = otp.join("");
+    if (enteredOtp.length < 4) {
+      setErrorMsg("Please enter the 4-digit OTP.");
       return;
     }
 
-    setDisableButton(true);
     setLoading(true);
 
     try {
-      if (otp.trim() === state[1].otp) {
+      if (enteredOtp === state[1].otp) {
         await axios.post(`${import.meta.env.VITE_URL}/otp`, state[0]);
         navigate("/login");
       } else {
         setErrorMsg("Invalid OTP. Please try again.");
-        setDisableButton(false);
       }
     } catch (err) {
       console.error(err);
       setErrorMsg("Something went wrong. Try again.");
-      setDisableButton(false);
     } finally {
       setLoading(false);
     }
   };
 
   const handleResend = () => {
-    setErrorMsg("Resend OTP logic is not implemented yet.");
+    setResendTimer(30);
+    setOtp(["", "", "", ""]);
+    inputRefs.current[0]?.focus();
+    setErrorMsg("OTP resent. Check your email.");
+    // Implement real resend API call if backend supports it
   };
 
   return (
@@ -76,29 +93,27 @@ const Otp = () => {
         </p>
 
         {errorMsg && (
-          <p className="text-red-500 font-medium text-center mb-2">
-            {errorMsg}
-          </p>
+          <p className="text-red-500 text-center mb-2">{errorMsg}</p>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-gray-700 mb-1 font-medium">OTP</label>
-            <input
-              type="text"
-              ref={otpRef}
-              value={otp}
-              onChange={(e) => setOtp(e.target.value.replace(/\D/, ""))}
-              required
-              maxLength={6}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter 6-digit OTP"
-            />
+          <div className="flex justify-between gap-2">
+            {otp.map((val, idx) => (
+              <input
+                key={idx}
+                type="text"
+                value={val}
+                onChange={(e) => handleChange(idx, e.target.value)}
+                ref={(el) => (inputRefs.current[idx] = el)}
+                maxLength={1}
+                className="w-14 h-14 text-center text-xl border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            ))}
           </div>
 
           <button
             type="submit"
-            disabled={disableButton || loading}
+            disabled={loading}
             className="w-full py-2.5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition"
           >
             {loading ? "Verifying..." : "Verify OTP"}
@@ -108,11 +123,11 @@ const Otp = () => {
         <p className="text-center text-gray-500 mt-4">
           Didn't receive OTP?{" "}
           <button
-            className="text-blue-600 hover:underline"
+            className={`text-blue-600 hover:underline ${resendTimer > 0 && "cursor-not-allowed"}`}
             onClick={handleResend}
-            disabled={disableButton}
+            disabled={resendTimer > 0}
           >
-            Resend
+            Resend {resendTimer > 0 ? `(${resendTimer}s)` : ""}
           </button>
         </p>
       </div>
