@@ -7,8 +7,8 @@ const Register = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [userid, setUserid] = useState("")
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -16,46 +16,75 @@ const Register = () => {
     confirmPassword: "",
     age: "",
     gender: "",
-    userId:""
+    userId: "",
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if(name=="email"){
-      const emial_name = value.split("@")
-      setUserid(emial_name[0])
+
+    let newFormData = { ...formData, [name]: value };
+
+    if (name === "email") {
+      const emailName = value.split("@")[0];
+      newFormData.userId = emailName;
     }
-    setFormData({ ...formData, [name]: value,userId:`${userid}` });
+
+    setFormData(newFormData);
+    setErrorMsg("");
   };
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Client-side validations
+    if (!formData.email.includes("@")) {
+      setErrorMsg("Enter a valid email address.");
+      return;
+    }
+
+    if (formData.password.length < 3) {
+      setErrorMsg("Password must be at least 3 characters.");
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
-    alert("Passwords do not match!");
-    return;
-  }
+      setErrorMsg("Passwords do not match.");
+      return;
+    }
+
+    if (!formData.age || formData.age < 1) {
+      setErrorMsg("Enter a valid age.");
+      return;
+    }
+
+    if (!formData.gender) {
+      setErrorMsg("Select your gender.");
+      return;
+    }
+
+    setLoading(true);
+
     try {
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_URL}/register`,
+        formData
+      );
 
-      setLoading(true)
-      
-      const {data} = await axios.post(`${import.meta.env.VITE_URL}/register`,formData)
-      // console.log(data);
-      
-      navigate("/otp",{state:[formData,data]})
+      // Navigate to OTP page with form data + server response
+      navigate("/otp", { state: [formData, data] });
     } catch (error) {
+      const status = error.response?.status;
 
-      if(error.status==409){
-        alert("User already exists")
-      }
-    } finally{
-      setLoading(false)
+      if (status === 409) setErrorMsg("User already exists.");
+      else setErrorMsg("Something went wrong. Try again later.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <section className="relative flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 px-6 py-2 min-h-screen">
-      {/* Back button fixed top-left */}
+      {/* Back button */}
       <button
         onClick={() => navigate(-1)}
         className="absolute top-4 left-4 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
@@ -63,11 +92,16 @@ const Register = () => {
         &larr; Back
       </button>
 
-      {/* Form container */}
       <div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-md">
         <h2 className="text-3xl font-bold text-center text-blue-700 mb-6">
           Create Your Account
         </h2>
+
+        {errorMsg && (
+          <p className="text-red-500 font-medium text-center mb-2">
+            {errorMsg}
+          </p>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-3">
           {/* Name */}
@@ -184,7 +218,7 @@ const Register = () => {
             disabled={loading}
             className="w-full py-2.5 mt-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
           >
-            {loading?"Registering...":"Register"}
+            {loading ? "Registering..." : "Register"}
           </button>
         </form>
       </div>

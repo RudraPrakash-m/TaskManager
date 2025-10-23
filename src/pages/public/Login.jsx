@@ -5,53 +5,64 @@ import axios from "axios";
 
 const Login = () => {
   const navigate = useNavigate();
-  const location = useLocation()
-  // console.log(location.pathname);
-  
+  const location = useLocation();
+
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [formData, setFormData] = useState({ email: "", password: "" });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData({ ...formData, [name]: value.trim() });
+    setErrorMsg("");
   };
 
-  const handleLoginBack=()=>{
-    if(location.pathname==="/login"){
-      navigate("/")
-    }else{
-      navigate(-1)
-    }
-  }
+  const handleLoginBack = () => {
+    if (location.pathname === "/login") navigate("/");
+    else navigate(-1);
+  };
 
-  const handleSubmit = async(e) => {
-    e.preventDefault(); 
-    // console.log(import.meta.env.VITE_URL);
-    
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setErrorMsg("");
+
+    if (!formData.email.includes("@")) {
+      setErrorMsg("Enter a valid email.");
+      return;
+    }
+    if (formData.password.length < 3) {
+      setErrorMsg("Password must be at least 3 characters.");
+      return;
+    }
+
+    setLoading(true);
+
     try {
-      const {data} = await axios.post(`${import.meta.env.VITE_URL}/login`,formData)
-      // console.log(data.token);
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_URL}/login`,
+        formData
+      );
 
-        localStorage.setItem("token", data.token)
-        if (data.token) navigate("/dashboard");
-      
+      if (!data?.token) throw new Error("Invalid response from server");
+
+      localStorage.setItem("token", data.token);
+
+      // Everyone goes to /dashboard
+      navigate("/dashboard");
     } catch (error) {
-      // console.log(error.response);
-      
-      if(error.response?.status==404) alert("User Doesn't exists")
+      const status = error.response?.status;
 
-      else if(error.response?.status==401) alert("Password is incorrect")
-      
+      if (status === 404) setErrorMsg("User doesn't exist.");
+      else if (status === 401) setErrorMsg("Incorrect password.");
+      else setErrorMsg("Something went wrong. Try again.");
+    } finally {
+      setLoading(false);
     }
-    // console.log(formData);
   };
 
   return (
     <section className="relative flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 px-6 py-10 min-h-screen">
-      {/* back button */}
       <button
         onClick={handleLoginBack}
         className="absolute top-4 left-4 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
@@ -65,7 +76,10 @@ const Login = () => {
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Email */}
+          {errorMsg && (
+            <p className="text-red-500 font-medium text-center">{errorMsg}</p>
+          )}
+
           <div>
             <label className="block text-gray-700 mb-1 font-medium">
               Email
@@ -76,12 +90,11 @@ const Login = () => {
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               placeholder="Enter your email"
             />
           </div>
 
-          {/* Password */}
           <div className="relative">
             <label className="block text-gray-700 mb-1 font-medium">
               Password
@@ -92,7 +105,7 @@ const Login = () => {
               value={formData.password}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 pr-10"
               placeholder="Enter your password"
             />
             <div
@@ -103,23 +116,24 @@ const Login = () => {
             </div>
           </div>
 
-          {/* Forgot password */}
-          <div className="text-right">
-            <button
-              type="button"
-              className="text-sm text-blue-600 hover:underline"
-              onClick={() => alert("Forgot password clicked")}
-            >
-              Forgot password?
-            </button>
-          </div>
-
-          {/* Submit */}
           <button
             type="submit"
-            className="w-full py-2.5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+            disabled={loading}
+            className={`w-full py-2.5 font-semibold rounded-lg transition 
+              ${
+                loading
+                  ? "bg-blue-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700 text-white"
+              }`}
           >
-            Login
+            {loading ? (
+              <div className="flex items-center justify-center gap-2">
+                <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full" />
+                Logging in...
+              </div>
+            ) : (
+              "Login"
+            )}
           </button>
         </form>
 
