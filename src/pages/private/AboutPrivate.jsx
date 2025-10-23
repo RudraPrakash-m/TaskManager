@@ -7,13 +7,6 @@ const AboutPrivate = () => {
 
   return (
     <>
-      <button
-        onClick={() => navigate(-1)}
-        className="fixed sm:hidden top-[80px] left-6 px-4 py-2 bg-blue-600 text-white font-medium rounded-lg shadow hover:bg-blue-700 transition"
-      >
-        ← Back
-      </button>
-
       {/* Main Section */}
       <section className="min-h-[calc(100vh-60px)] flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 text-gray-800 px-6 py-10">
         <h1 className="text-4xl sm:text-5xl font-bold text-blue-700 mb-6 text-center">
