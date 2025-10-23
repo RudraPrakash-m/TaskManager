@@ -9,6 +9,7 @@ const Otp = () => {
 
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const [disableButton, setDisableButton] = useState(false);
 
   useEffect(() => {
@@ -31,25 +32,27 @@ const Otp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMsg("");
+
+    if (!/^\d{6}$/.test(otp)) {
+      setErrorMsg("OTP must be 6 digits.");
+      return;
+    }
+
     setDisableButton(true);
     setLoading(true);
 
     try {
-      // Compare OTP safely on frontend
-      if (otp.trim() == state[1].otp) {
-        await axios.post(
-          "https://taskmanagerb-k9mv.onrender.com/api/otp",
-          state[0]
-        );
-        alert("Registered Successfully");
-        navigate("/login", { state: location.pathname });
+      if (otp.trim() === state[1].otp) {
+        await axios.post(`${import.meta.env.VITE_URL}/otp`, state[0]);
+        navigate("/login");
       } else {
-        alert("Enter valid OTP");
-        setDisableButton(false); // Re-enable button if wrong OTP
+        setErrorMsg("Invalid OTP. Please try again.");
+        setDisableButton(false);
       }
     } catch (err) {
       console.error(err);
-      alert("Something went wrong. Try again.");
+      setErrorMsg("Something went wrong. Try again.");
       setDisableButton(false);
     } finally {
       setLoading(false);
@@ -57,7 +60,7 @@ const Otp = () => {
   };
 
   const handleResend = () => {
-    alert("Resend OTP logic here"); // Keep as placeholder
+    setErrorMsg("Resend OTP logic is not implemented yet.");
   };
 
   return (
@@ -72,6 +75,12 @@ const Otp = () => {
           <span className="font-medium">{hideEmail(state[0].email)}</span>
         </p>
 
+        {errorMsg && (
+          <p className="text-red-500 font-medium text-center mb-2">
+            {errorMsg}
+          </p>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-gray-700 mb-1 font-medium">OTP</label>
@@ -79,11 +88,11 @@ const Otp = () => {
               type="text"
               ref={otpRef}
               value={otp}
-              onChange={(e) => setOtp(e.target.value)}
+              onChange={(e) => setOtp(e.target.value.replace(/\D/, ""))}
               required
               maxLength={6}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter OTP"
+              placeholder="Enter 6-digit OTP"
             />
           </div>
 
