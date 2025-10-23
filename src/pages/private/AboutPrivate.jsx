@@ -1,16 +1,15 @@
-import React from 'react';
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import FooterPrivate from '../../components/private/FooterPrivate';
+import FooterPrivate from "../../components/private/FooterPrivate";
 
 const AboutPrivate = () => {
   const navigate = useNavigate();
 
   return (
     <>
-      {/* Back Button (fixed under navbar) */}
       <button
         onClick={() => navigate(-1)}
-        className="fixed top-[80px] left-6 px-4 py-2 bg-blue-600 text-white font-medium rounded-lg shadow hover:bg-blue-700 transition z-50"
+        className="fixed sm:hidden top-[80px] left-6 px-4 py-2 bg-blue-600 text-white font-medium rounded-lg shadow hover:bg-blue-700 transition"
       >
         ← Back
       </button>
@@ -23,9 +22,9 @@ const AboutPrivate = () => {
 
         <p className="max-w-2xl text-center text-lg text-gray-600 mb-10">
           Task Manager is a simple yet powerful productivity app that helps you
-          organize, prioritize, and manage your daily tasks efficiently.
-          Whether it's personal goals, study schedules, or professional work —
-          this tool helps you stay focused and in control every day.
+          organize, prioritize, and manage your daily tasks efficiently. Whether
+          it's personal goals, study schedules, or professional work — this tool
+          helps you stay focused and in control every day.
         </p>
 
         <div className="bg-white shadow-lg rounded-2xl p-6 w-full sm:w-[400px] text-center">
@@ -39,7 +38,7 @@ const AboutPrivate = () => {
         </div>
       </section>
 
-      <FooterPrivate/>
+      <FooterPrivate />
     </>
   );
 };

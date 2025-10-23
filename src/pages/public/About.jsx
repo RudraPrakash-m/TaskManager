@@ -6,11 +6,9 @@ const About = () => {
 
   return (
     <section className="min-h-[calc(100vh-60px)] bg-gradient-to-br from-blue-50 to-blue-100 text-gray-800 px-6 py-10 relative">
-
-      {/* Back Button - just below navbar */}
       <button
         onClick={() => navigate(-1)}
-        className="fixed top-[80px] left-6 px-4 py-2 bg-blue-600 text-white font-medium rounded-lg shadow hover:bg-blue-700 transition"
+        className="fixed sm:hidden top-[80px] left-6 px-4 py-2 bg-blue-600 text-white font-medium rounded-lg shadow hover:bg-blue-700 transition"
       >
         ← Back
       </button>
