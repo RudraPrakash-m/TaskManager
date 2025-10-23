@@ -34,8 +34,8 @@ const Otp = () => {
     e.preventDefault();
     setErrorMsg("");
 
-    if (!/^\d{6}$/.test(otp)) {
-      setErrorMsg("OTP must be 6 digits.");
+    if (!/^\d{4}$/.test(otp)) {
+      setErrorMsg("OTP must be 4 digits.");
       return;
     }
 
