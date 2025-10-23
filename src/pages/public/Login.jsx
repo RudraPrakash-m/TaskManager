@@ -29,7 +29,7 @@ const Login = () => {
 
   const handleSubmit = async(e) => {
     e.preventDefault(); 
-    console.log(import.meta.env.VITE_URL);
+    // console.log(import.meta.env.VITE_URL);
     
     try {
       const {data} = await axios.post(`${import.meta.env.VITE_URL}/login`,formData)
