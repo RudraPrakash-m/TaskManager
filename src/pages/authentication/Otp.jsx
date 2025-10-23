@@ -58,7 +58,7 @@ const Otp = () => {
     setLoading(true);
 
     try {
-      if (enteredOtp === state[1].otp) {
+      if (enteredOtp == state[1].otp) {
         await axios.post(`${import.meta.env.VITE_URL}/otp`, state[0]);
         navigate("/login");
       } else {
