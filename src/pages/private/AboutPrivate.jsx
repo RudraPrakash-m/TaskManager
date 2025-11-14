@@ -22,7 +22,7 @@ const AboutPrivate = () => {
 
         <div className="bg-white shadow-lg rounded-2xl p-6 w-full sm:w-[400px] text-center">
           <h2 className="text-2xl font-semibold text-blue-700">
-            Rudra Prakash Mallick
+            TeamError404
           </h2>
           <p className="text-gray-600 mt-2 text-sm">
             Developer | Software Engineer | Passionate about building clean,
